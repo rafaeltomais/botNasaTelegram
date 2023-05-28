@@ -15,13 +15,17 @@ app.post("/", async (req, res) => {
     const userInput = receivedJSON.message.text;
     
     const imageNasaData = await getNasaData();
-    
-    
 
     if(userInput.toLowerCase().includes('foto da nasa'))
         await sendImage(chat_id, imageNasaData);
-    else if(userInput.toLowerCase().includes('foto da phoebe'))
-        await sendMessage(chat_id, "Uma foto da Phoebe aqui");
+    else if(userInput.toLowerCase().includes('foto da phoebe')) {
+        const imagePhoebe = {
+            title: "Uma foto da Phoebe aqui",
+            url: "https://photos.google.com/share/AF1QipNNvDMyU2_1j0AargNh6OSK7IYBY2duMGGF-6XCRh0Pj9qXNWdXvjGoFlnYbohVqA/photo/AF1QipMosXq6fRhaIuvW7QIM66AdnmxXvyLz3OoiyBfk?key=MlpUMFRlZGNpZkZMT1U2V1Y2UTV5UTlIb05BV293"
+        }
+        await sendImage(chat_id, imagePhoebe);
+        await sendMessage(chat_id, "pronto");
+    }
     else
         await sendMessage(chat_id, "Olá, seja muito bem vindo ao bot de imagens.%0A%0A- Temos uma foto do espaço todos os dias por aqui! Basta digitar: 'Foto da Nasa'%0A- Se veio por conta da cachorrinha mais linda, envie 'Foto da Phoebe'");
 
