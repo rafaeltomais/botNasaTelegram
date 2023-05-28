@@ -23,7 +23,7 @@ app.post("/", async (req, res) => {
     else if(userInput.toLowerCase().includes('foto da phoebe'))
         await sendMessage(chat_id, "Uma foto da Phoebe aqui");
     else
-        await sendMessage(chat_id, "Olá, seja muito bem vindo ao bot de imagens.+%0A++%0A+Temos uma foto do espaço todos os dias por aqui! Basta digitar: 'Foto da Nasa'+%0A+Se veio por conta da cachorrinha mais linda, envie 'Foto da Phoebe'");
+        await sendMessage(chat_id, "Olá, seja muito bem vindo ao bot de imagens.%0A%0A- Temos uma foto do espaço todos os dias por aqui! Basta digitar: 'Foto da Nasa'+%0A+- Se veio por conta da cachorrinha mais linda, envie 'Foto da Phoebe'");
 
     res.json(receivedJSON);
 });
