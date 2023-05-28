@@ -16,14 +16,14 @@ app.post("/", async (req, res) => {
     
     const imageNasaData = await getNasaData();
     
-    await sendMessage(chat_id, "Olá, seja muito bem vindo ao bot de imagens.\n\nTemos uma foto do espaço todos os dias por aqui! Basta digitar: 'Foto da Nasa'\n\nSe veio por conta da cachorrinha mais linda, envie 'Foto da Phoebe'");
+    
 
     if(userInput.toLowerCase().includes('foto da nasa'))
         await sendImage(chat_id, imageNasaData);
     else if(userInput.toLowerCase().includes('foto da phoebe'))
         await sendMessage(chat_id, "Uma foto da Phoebe aqui");
     else
-        await sendMessage(chat_id, "Desculpe, por enquanto, estamos limitados em nossas opções.");
+        await sendMessage(chat_id, "Olá, seja muito bem vindo ao bot de imagens.<br><br>Temos uma foto do espaço todos os dias por aqui! Basta digitar: 'Foto da Nasa'<br><br>Se veio por conta da cachorrinha mais linda, envie 'Foto da Phoebe'");
 
     res.json(receivedJSON);
 });
