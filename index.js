@@ -3,7 +3,7 @@ const express = require("express");
 
 const app = express();
 app.use(express.json());
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 const BOT_TOKEN = "6268049973:AAHa1fSTqMLzyTBjsb1Y5I4_q3yNm9c5bvs";
 const BASE_URL = `https://api.telegram.org/bot${BOT_TOKEN}/`;
