@@ -45,6 +45,10 @@ const bdPhoebePhotos = [
     title: "Phoebe alegre modelando na poltrona",
     url: "https://lh3.googleusercontent.com/pw/AJFCJaVStYxTadhlKdj51Otk0lHZtwTfZg3yb8ISf3EBkcItvtXE8_9LB9LJh_CSfVbBvHAjwWb3IPMQVlDF5ckFRrLi7l3sIzHVWEPv3HmB9OKEyR3jsfUoFTHz04f2p6aU1AmGTh1RG_hz-O2bjeArYU40aw=w703-h937-s-no?authuser=0",
   },
+  {
+    title: "Phoebe com seu amiguinho Marcelino",
+    url: "https://lh3.googleusercontent.com/pw/AJFCJaUZZLWQ8MsT0nv79_jEW3ybkN4ti9DTgLTuG5q_hsKYERapfk5CBli3MhLOJGkWqlshJsY4glLJRZYlfyPpnLpA74eagFUufeEcQPrHcWmAzWmgXtb0Afx4DIc3AmEv-60qr__BGcxxH_LBMToyuv6vvw=w703-h937-s-no?authuser=0",
+  },
 ];
 
 app.post("/", async (req, res) => {
