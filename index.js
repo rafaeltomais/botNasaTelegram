@@ -1,12 +1,14 @@
 const Axios = require('axios');
 const express = require("express");
+require('dotenv').config()
 
 const app = express();
 app.use(express.json());
 const port = process.env.PORT || 3000;
 
-const BOT_TOKEN = "6268049973:AAHa1fSTqMLzyTBjsb1Y5I4_q3yNm9c5bvs";
-const BASE_URL = `https://api.telegram.org/bot${BOT_TOKEN}/`;
+const botToken = process.env.BOT_TOKEN;
+const baseURL = `${process.env.BASE_URL}/bot${botToken}/`;
+const keyApiNasa = process.env.KEY_API_NASA
 
 const bdPhoebePhotos = [
   {
@@ -76,7 +78,7 @@ app.post("/", async (req, res) => {
 async function sendMessage(chat_id, textMessage) {
 
     const sendMessageUrl = `sendMessage?chat_id=${chat_id}&text=${textMessage}`;
-    const urlFinal = BASE_URL + sendMessageUrl;
+    const urlFinal = baseURL + sendMessageUrl;
 
     await Axios.get(urlFinal);
 }
@@ -86,13 +88,13 @@ async function sendImage(chat_id, imageNasaData) {
     const { title, url } = imageNasaData
 
     const sendPhotoUrl = `sendPhoto?chat_id=${chat_id}&photo=${url}&caption=${title}`;
-    const urlFinal = BASE_URL + sendPhotoUrl;
+    const urlFinal = baseURL + sendPhotoUrl;
 
     await Axios.get(urlFinal);
 }
 
 async function getNasaData() {
-    const { data } = await Axios.get("https://api.nasa.gov/planetary/apod?api_key=6x4eNSnuNwmEeFfgymn5A4fxM5mR14gP5qTNEjDq");
+    const { data } = await Axios.get(`https://api.nasa.gov/planetary/apod?api_key=${keyApiNasa}`);
     return data
 }
 

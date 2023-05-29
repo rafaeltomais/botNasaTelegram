@@ -3,3 +3,5 @@ dependencies
 
 Debug logs
 npm-debug.log
+
+.env
