@@ -57,12 +57,23 @@ app.post("/", async (req, res) => {
     const receivedJSON = req.body;
     const chat_id = receivedJSON.message.chat.id;
     const userInput = receivedJSON.message.text;
-    
-    const imageNasaData = await getNasaData();
 
   if (userInput.toLowerCase().includes("foto da nasa") || userInput == 1) {
     await sendMessage(chat_id, "Aqui temos todos os dias uma imagem diferente do espaço fornecida pela NASA!");
-    await sendImage(chat_id, imageNasaData);
+
+    const imageNasaData = await getNasaData();
+    
+    if(imageNasaData === undefined) {
+      await sendMessage(chat_id, "Ops, tivemos um problema para capturar a imagem de hoje, tente novamente mais tarde!%0A%0ADesculpe o transtorno, fique com uma imagem que gostamos muito.");
+      const imageDefault = {
+        title: "M94: A Double Ring Galaxy",
+        url: "https://apod.nasa.gov/apod/image/2306/M94_Brennan_960.jpg"
+      }
+      await sendImage(chat_id, imageDefault);
+    }
+    else
+      await sendImage(chat_id, imageNasaData);
+   
   } 
   else if (userInput.toLowerCase().includes("foto da phoebe") || userInput == 2) {
     const randomIndex = Math.floor(Math.random() * (bdPhoebePhotos.length + 1));
@@ -76,26 +87,39 @@ app.post("/", async (req, res) => {
 });
 
 async function sendMessage(chat_id, textMessage) {
-
+  try {
     const sendMessageUrl = `sendMessage?chat_id=${chat_id}&text=${textMessage}`;
     const urlFinal = baseURL + sendMessageUrl;
 
     await Axios.get(urlFinal);
+  }
+  catch(error) {
+    console.error("sendMessage: " + error.message)
+  }
 }
 
 async function sendImage(chat_id, imageNasaData) {
-
+  try {
     const { title, url } = imageNasaData
 
     const sendPhotoUrl = `sendPhoto?chat_id=${chat_id}&photo=${url}&caption=${title}`;
     const urlFinal = baseURL + sendPhotoUrl;
 
     await Axios.get(urlFinal);
+  }
+  catch(error) {
+    console.error("sendImage: " + error.message)
+  }
 }
 
 async function getNasaData() {
+  try {
     const { data } = await Axios.get(`https://api.nasa.gov/planetary/apod?api_key=${keyApiNasa}`);
-    return data
+    return data 
+  }
+  catch(error) {
+    console.error("getNasaImage: " + error.message)
+  }
 }
 
 app.listen(port, () => {
