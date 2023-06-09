@@ -5,6 +5,7 @@ require('dotenv').config()
 const app = express();
 app.use(express.json());
 const port = process.env.PORT || 3000;
+const timeout = 4000;
 
 const botToken = process.env.BOT_TOKEN;
 const baseURL = `${process.env.BASE_URL}/bot${botToken}/`;
@@ -56,70 +57,96 @@ const bdPhoebePhotos = [
 app.post("/", async (req, res) => {
     const receivedJSON = req.body;
     const chat_id = receivedJSON.message.chat.id;
+    
     const userInput = receivedJSON.message.text;
+    const userInputNormalized = textNormalizer(userInput);
+    
+    const regexGreeting = /^(ola)|^([oe]i)$|(bomdia)|(boatarde)|(boanoite)/g
+    const regexFarewell = /(tchau)|^(xau)$|(ate)((mais)|((\w)(proxima)$))/g
+    const regexNasa = /^(1)$|(nasa)/g;
+    const regexPhoebe = /^(2)$|(phoebe)/g
 
-  if (userInput.toLowerCase().includes("foto da nasa") || userInput == 1) {
-    await sendMessage(chat_id, "Aqui temos todos os dias uma imagem diferente do espaço fornecida pela NASA!");
-
+  if(userInputNormalized.match(regexGreeting)) {
+    await sendTextMessage(chat_id, "Olá, seja muito bem vindo ao bot de imagens.%0A%0AEscolha uma das opções abaixo:%0A%0A1 - Foto da Nasa%0A2 - Foto da Phoebe");
+  }
+  else if(userInputNormalized.match(regexFarewell)) {
+    await sendTextMessage(chat_id, "Até mais! Sempre que quiser dar uma olhadinha, estarei por aqui! 👋");
+  }
+  else if(userInputNormalized.match(regexNasa)) {
     const imageNasaData = await getNasaData();
     
     if(imageNasaData === undefined) {
-      await sendMessage(chat_id, "Ops, tivemos um problema para capturar a imagem de hoje, tente novamente mais tarde!%0A%0ADesculpe o transtorno, fique com uma imagem que gostamos muito.");
       const imageDefault = {
         title: "M94: A Double Ring Galaxy",
         url: "https://apod.nasa.gov/apod/image/2306/M94_Brennan_960.jpg"
-      }
-      await sendImage(chat_id, imageDefault);
+      } 
+      await sendTextMessage(chat_id, "Ops, tivemos um problema para capturar a imagem de hoje, tente novamente mais tarde!%0A%0ADesculpe o transtorno, mas enquanto isso fique com uma imagem que gostamos muito.");   
+      await sendImageMessage(chat_id, imageDefault);
     }
-    else
-      await sendImage(chat_id, imageNasaData);
-   
+    else {
+      await sendTextMessage(chat_id, "Aqui temos todos os dias uma imagem diferente do espaço fornecida pela NASA!");
+      await sendImageMessage(chat_id, imageNasaData);
+    }
   } 
-  else if (userInput.toLowerCase().includes("foto da phoebe") || userInput == 2) {
+  else if(userInputNormalized.match(regexPhoebe)) {
     const randomIndex = Math.floor(Math.random() * (bdPhoebePhotos.length + 1));
     const imagePhoebe = bdPhoebePhotos[randomIndex];
     
-    await sendImage(chat_id, imagePhoebe);
+    await sendImageMessage(chat_id, imagePhoebe);
   } 
-  else
-    await sendMessage(chat_id, "Olá, seja muito bem vindo ao bot de imagens.%0A%0AEscolha uma das opções abaixo:%0A%0A1 - Foto da Nasa%0A2 - Foto da Phoebe");
+  else {
+    await sendTextMessage(chat_id, "Desculpe, não entendi sua mensagem, envie um 'oi' para ver o que podemos fazer por aqui.");
+  }
   res.status(200).json(receivedJSON);
 });
 
-async function sendMessage(chat_id, textMessage) {
+async function sendTextMessage(chat_id, textMessage) {
   try {
-    const sendMessageUrl = `sendMessage?chat_id=${chat_id}&text=${textMessage}`;
-    const urlFinal = baseURL + sendMessageUrl;
-
-    await Axios.get(urlFinal);
+    const sendTextMessageUrl = `sendMessage?chat_id=${chat_id}&text=${textMessage}`;
+    await sendUrlMessageToUser(sendTextMessageUrl);
   }
   catch(error) {
-    console.error("sendMessage: " + error.message)
+    console.error("Erro em sendTextMessage: " + error.message)
   }
 }
 
-async function sendImage(chat_id, imageNasaData) {
+async function sendImageMessage(chat_id, imageNasaData) {
   try {
     const { title, url } = imageNasaData
 
-    const sendPhotoUrl = `sendPhoto?chat_id=${chat_id}&photo=${url}&caption=${title}`;
-    const urlFinal = baseURL + sendPhotoUrl;
-
-    await Axios.get(urlFinal);
+    const sendImageMessageUrl = `sendPhoto?chat_id=${chat_id}&photo=${url}&caption=${title}`;
+    await sendUrlMessageToUser(sendImageMessageUrl);
   }
   catch(error) {
-    console.error("sendImage: " + error.message)
+    console.error("Erro em sendImageMessage: " + error.message)
   }
 }
 
 async function getNasaData() {
   try {
-    const { data } = await Axios.get(`https://api.nasa.gov/planetary/apod?api_key=${keyApiNasa}`);
+    const { data } = await Axios.get(`https://api.nasa.gov/planetary/apod?api_key=${keyApiNasa}`, { timeout });
     return data 
   }
   catch(error) {
-    console.error("getNasaImage: " + error.message)
+    if (error.code === 'ECONNABORTED') {
+      console.error("Erro de timeout em getNasaImage: " + error.message)
+    } 
+    else {
+      console.error("Erro desconhecido em getNasaImage: " + error.message)
+    }
   }
+}
+
+function textNormalizer(dataToNormalize) {
+  return dataToNormalize
+    .normalize("NFD")
+    .replace(/([^ªa-záàâãéèêíïóôõöúçñ0-9]+)/gi, "")
+    .toLowerCase();
+}
+
+async function sendUrlMessageToUser(sendMessageUrl) {
+  const urlFinal = baseURL + sendMessageUrl;
+  await Axios.get(urlFinal);
 }
 
 app.listen(port, () => {
