@@ -13,11 +13,7 @@ route.post("/", async (req, res) => {
     const chat_id = receivedJSON?.message?.chat.id ?? receivedJSON?.my_chat_member?.chat.id;
    
     if(!receivedJSON.hasOwnProperty("message")) { 
-        for(let i = 0; i < 10; i++) {
-            await sendTextMessage(chat_id, "Temos algumas restrições e não envio mensagem em grupos. Sou tímido! Mas vou ficar mandando essa mensagem até me excluírem daqui.");
-        }
-        console.log("Without message");
-        return res.status(405).json({status: 405, message: "Não permitido este tipo de interação."});
+        console.log("Alert group: Without message!");
     }
     else {
 
