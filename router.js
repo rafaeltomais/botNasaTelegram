@@ -9,7 +9,6 @@ const { getPhoebeData } = require('./src/services/getPhoebeData.js');
 
 route.post("/", async (req, res) => {
     const receivedJSON = req.body;
-    console.log(receivedJSON)
     
     const chat_id = receivedJSON?.message?.chat.id ?? receivedJSON?.my_chat_member?.chat.id;
    
