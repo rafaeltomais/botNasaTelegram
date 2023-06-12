@@ -9,6 +9,7 @@ const { getPhoebeData } = require('./src/services/getPhoebeData.js');
 
 route.post("/", async (req, res) => {
     const receivedJSON = req.body;
+   console.log(receivedJSON);
    
     if(undefined == receivedJSON.message) { 
         console.log("Without message");
