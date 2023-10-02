@@ -29,7 +29,6 @@ async function sendImageMessage(chat_id, imageMetadata) {
 }
 
 async function sendUrlMessageToUser(sendMessageUrl) {
-    console.log(baseURL)
     const urlFinal = baseURL + sendMessageUrl;
     await Axios.get(urlFinal);
 }
